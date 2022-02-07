@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=EUC-KR"
-    pageEncoding="EUC-KR"%>
+<%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="EUC-KR"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,8 +32,25 @@
 			}
 		%>
 		<h4>구구단</h4>
-		<%
+		<table border="1" >
+		<tr>
+			<th>2단</th>
+			<th>3단</th>
+			<th>4단</th>
+			<th>5단</th>
+			<th>6단</th>
+			<th>7단</th>
+			<th>8단</th>
+			<th>9단</th>
+		</tr>
 		
-		%>
+		<% for(int x=2 ; x<=9 ; x++){ %>
+			<tr>
+		<% for(int y=2 ; y<=9 ; y++){%>	
+					<td><%= y %> x 	<%= x %> = <%= x*y  %></td>
+		<%	} %>
+			</tr>
+		<% } %>
+	</table>
 	</body>
 </html>
