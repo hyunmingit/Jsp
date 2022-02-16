@@ -1,3 +1,5 @@
+<%@page import="kr.co.board1.db.Sql"%>
+<%@page import="kr.co.board1.db.DBConfig"%>
 <%@page import="kr.co.board1.bean.TermsBean"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
@@ -5,17 +7,14 @@
 <%@page import="java.sql.Connection"%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%
-	String host = "jdbc:mysql://chhak.or.kr:3306/jhmcos13";
-	String user = "jhmcos13";
-	String pass = "1234";
+	
 	
 	TermsBean tb = null;
 
 	try{
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection conn = DriverManager.getConnection(host, user, pass);
+		Connection conn =  DBConfig.getInstance().getConnection();
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT * FROM `Board_terms`");
+		ResultSet rs = stmt.executeQuery(Sql.SELECT_TERMS);
 		
 		if(rs.next()){
 			tb = new TermsBean();
@@ -42,6 +41,29 @@
     <meta charset="UTF-8">
     <title>약관</title>
     <link rel="stylesheet" href="../css/style.css"/>    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script scr="/Board1/js/terms.js"></script>
+    <script>
+    
+    	$(function(){
+    		
+    		$('.terms > div > a:eq(1)').click(function(){
+				
+    			let checked1 = $('input[name=chk1]').is(":checked");
+    			let checked2 = $('input[name=chk2]').is(":checked");
+    			
+    			
+    			if(!checked1 || !checked2){
+    				alert('동의를 해야합니다.');
+    				return false;
+    			}else{
+    				return true;
+    			}
+    		});
+    		
+    	});
+    
+    </script>
 </head>
 <body>
     <div id="wrapper">
