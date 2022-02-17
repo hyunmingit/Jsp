@@ -1,3 +1,5 @@
+<%@page import="kr.co.board1.db.ArticleDao"%>
+<%@page import="kr.co.board1.bean.articleBean"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.io.File"%>
@@ -25,38 +27,17 @@
 	String uid = mr.getParameter("uid");
 	String regip = request.getRemoteAddr();
 	
-	//데이터 처리
+	articleBean article = new articleBean();
+	article.setTitle(title);
+	article.setContent(content);
+	article.setFname(fname);
+	article.setUid(uid);
 	
-	int id = 0;
-	try{
-		Connection conn = DBConfig.getInstance().getConnection();
-		
-		PreparedStatement psmt = conn.prepareStatement(Sql.INSERT_ARTICLE);
-		psmt.setString(1, title);
-		psmt.setString(2, content);
-		psmt.setInt(3, fname == null ? 0 : 1);
-		psmt.setString(4, uid);
-		psmt.setString(5, regip);
-		psmt.executeUpdate();
-		
-		//방금 작성한 글 번호 조회
-		Statement stmt = conn.createStatement();
-		ResultSet rs =  stmt.executeQuery(Sql.SELECT_MAX_ID);
-		
-		
-		if(rs.next()){
-			 id = rs.getInt(1);
-		}
-		
-		
-		
-		
-		
-		conn.close();
-		
-	}catch (Exception e){
-		e.printStackTrace();
-	}
+	article.setRegip(regip);
+	
+	int id = ArticleDao.getInstance().insertArticle(article);
+	
+	
 	
 	//파일 처리 작업
 	if(fname != null){
@@ -79,20 +60,7 @@
 		
 		//파일테이블 insert
 		
-		try{
-			Connection conn = DBConfig.getInstance().getConnection();
-			
-			PreparedStatement psmt = conn.prepareStatement(Sql.INSERT_FILE);
-			psmt.setInt(1, id);
-			psmt.setString(2, fname);
-			psmt.setString(3, newName);
-			psmt.executeUpdate();
-			
-			conn.close();
-			
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		ArticleDao.getInstance().insertFile(id, fname, newName);
 		
 		
 		
