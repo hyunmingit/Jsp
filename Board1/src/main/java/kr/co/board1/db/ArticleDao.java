@@ -7,7 +7,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import kr.co.board1.bean.articleBean;
+import kr.co.board1.bean.ArticleBean;
+import kr.co.board1.bean.FileBean;
 
 public class ArticleDao {
 	
@@ -15,16 +16,12 @@ public class ArticleDao {
 	
 	public static ArticleDao getInstance() {
 		return instance;
-	}
+	}	
 	private ArticleDao() {}
 	
-	//CRUD 메서드 정의
-	
-	public void insertFile(int id, String fname, String newName){
-		
+	public void insertFile(int id, String fname, String newName) {
 		try{
 			Connection conn = DBConfig.getInstance().getConnection();
-			
 			PreparedStatement psmt = conn.prepareStatement(Sql.INSERT_FILE);
 			psmt.setInt(1, id);
 			psmt.setString(2, fname);
@@ -36,10 +33,10 @@ public class ArticleDao {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
 	}
 	
-	public int insertArticle(articleBean article) {
+	public int insertArticle(ArticleBean article) {
+		
 		try{
 			Connection conn = DBConfig.getInstance().getConnection();
 			
@@ -51,46 +48,60 @@ public class ArticleDao {
 			psmt.setString(5, article.getRegip());
 			psmt.executeUpdate();
 			
+			conn.close();
 			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return selectMaxId();
+	}
+	
+	public void insertComment(ArticleBean article) {
+		
+		try{
+			Connection conn = DBConfig.getInstance().getConnection();
 			
-			
+			PreparedStatement psmt = conn.prepareStatement(Sql.INSERT_COMMENT);
+			psmt.setInt(1, article.getParent());
+			psmt.setString(2, article.getContent());
+			psmt.setString(3, article.getUid());
+			psmt.setString(4, article.getRegip());
+			psmt.executeUpdate();
 			
 			conn.close();
 			
-		}catch (Exception e){
+		}catch(Exception e){
 			e.printStackTrace();
 		}
-		return selectMaxID();
-		
-		
-		
 	}
 	
-	public int selectMaxID() {
+	
+	
+	public int selectMaxId() {
+		
 		int id = 0;
 		
 		try {
-
-			//방금 작성한 글 번호 조회
 			Connection conn = DBConfig.getInstance().getConnection();
 			Statement stmt = conn.createStatement();
-			ResultSet rs =  stmt.executeQuery(Sql.SELECT_MAX_ID);
-			
+			ResultSet rs = stmt.executeQuery(Sql.SELECT_MAX_ID);
 			
 			if(rs.next()){
-				 id = rs.getInt(1);
+				id = rs.getInt(1);
 			}
-			
-			
 			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		return id;
 	}
-	public int selectCountID(){
+	
+	public int selectCountId() {
 		
 		int total = 0;
+		
 		try{
 			Connection conn = DBConfig.getInstance().getConnection();
 			Statement stmt = conn.createStatement();
@@ -105,15 +116,85 @@ public class ArticleDao {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		
 		return total;
 	}
-	public void selectArticle() {}
 	
+	public FileBean selectFile(String fid) {
+		
+		FileBean fb = null;
+		
+		try {
+			Connection conn = DBConfig.getInstance().getConnection();
+			PreparedStatement psmt = conn.prepareStatement(Sql.SELECT_FILE);
+			psmt.setString(1, fid);
+			
+			ResultSet rs = psmt.executeQuery();
+			
+			if(rs.next()) {
+				fb = new FileBean();
+				fb.setFid(rs.getInt(1));
+				fb.setParent(rs.getInt(2));
+				fb.setoName(rs.getString(3));
+				fb.setnName(rs.getString(4));
+				fb.setDownload(rs.getInt(5));
+				fb.setRdate(rs.getString(6));
+			}
+			conn.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return fb;
+	}
+	
+	public ArticleBean selectArticle(String id) {
+		
+		ArticleBean article = null;
+		
+		try {
+			Connection conn = DBConfig.getInstance().getConnection();
+			PreparedStatement psmt = conn.prepareStatement(Sql.SELECT_ARTICLE);
+			psmt.setString(1, id);
 
+			ResultSet rs = psmt.executeQuery();
+			if(rs.next()) {
+				article = new ArticleBean();
+				article.setId(rs.getInt(1));
+				article.setParent(rs.getInt(2));
+				article.setComment(rs.getInt(3));
+				article.setCate(rs.getString(4));
+				article.setTitle(rs.getString(5));
+				article.setContent(rs.getString(6));
+				article.setFile(rs.getInt(7));
+				article.setHit(rs.getInt(8));
+				article.setUid(rs.getString(9));
+				article.setRegip(rs.getString(10));
+				article.setRdate(rs.getString(11));
+				
+				FileBean fb = new FileBean();
+				fb.setFid(rs.getInt(12));
+				fb.setParent(rs.getInt(13));
+				fb.setoName(rs.getString(14));
+				fb.setnName(rs.getString(15));
+				fb.setDownload(rs.getInt(16));
+				fb.setRdate(rs.getString(17));
+									
+				article.setFb(fb);
+			}
+			conn.close();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return article;
+	}
 	
-	public List<articleBean> selectArticles(int start) {
-		List<articleBean> articles = new ArrayList<>();
-	
+	public List<ArticleBean> selectArticles(int start) {
+		
+		List<ArticleBean> articles = new ArrayList<>();
+		
 		try{
 			Connection conn = DBConfig.getInstance().getConnection();
 			PreparedStatement psmt = conn.prepareStatement(Sql.SELECT_ARTICLES);
@@ -122,7 +203,7 @@ public class ArticleDao {
 			ResultSet rs = psmt.executeQuery();
 			
 			while(rs.next()){
-				articleBean article = new articleBean();
+				ArticleBean article = new ArticleBean();
 				article.setId(rs.getInt(1));
 				article.setParent(rs.getInt(2));
 				article.setComment(rs.getInt(3));
@@ -140,14 +221,58 @@ public class ArticleDao {
 			}
 			
 			conn.close();
-				
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-			return articles;
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return articles;
 	}
+	
+	public void updateFileCount(int fid) {
+		try {
+			Connection conn = DBConfig.getInstance().getConnection();
+			PreparedStatement psmt = conn.prepareStatement(Sql.UPDATE_FILE_COUNT);
+			psmt.setInt(1, fid);
+			
+			psmt.executeUpdate();
+			conn.close();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	public void updateArticleHit(int id) {
+		try {
+			Connection conn = DBConfig.getInstance().getConnection();
+			PreparedStatement psmt = conn.prepareStatement(Sql.UPDATE_ARTICLE_HIT);
+			psmt.setInt(1, id);
+			
+			psmt.executeUpdate();
+			conn.close();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	public void updateArticleComment(String id) {
+		try {
+			Connection conn = DBConfig.getInstance().getConnection();
+			PreparedStatement psmt = conn.prepareStatement(Sql.UPDATE_ARTICLE_COMMENT);
+			psmt.setString(1, id);
+			
+			psmt.executeUpdate();
+			conn.close();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+	
 	public void updateArticle() {}
 	public void deleteArticle() {}
+		
 	
-
 }
