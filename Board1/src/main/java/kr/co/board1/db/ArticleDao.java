@@ -7,11 +7,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import kr.co.board1.bean.ArticleBean;
 import kr.co.board1.bean.FileBean;
 
 public class ArticleDao {
 	
+	// �̱��� ��ü
 	private static ArticleDao instance = new ArticleDao();
 	
 	public static ArticleDao getInstance() {
@@ -19,6 +21,7 @@ public class ArticleDao {
 	}	
 	private ArticleDao() {}
 	
+	// CRUD �޼��� ����
 	public void insertFile(int id, String fname, String newName) {
 		try{
 			Connection conn = DBConfig.getInstance().getConnection();
@@ -40,6 +43,7 @@ public class ArticleDao {
 		try{
 			Connection conn = DBConfig.getInstance().getConnection();
 			
+			// INSERT ����
 			PreparedStatement psmt = conn.prepareStatement(Sql.INSERT_ARTICLE);
 			psmt.setString(1, article.getTitle());
 			psmt.setString(2, article.getContent());
@@ -54,6 +58,7 @@ public class ArticleDao {
 			e.printStackTrace();
 		}
 		
+		// ��� INSERT�� �� ��ȣ ��ȸ
 		return selectMaxId();
 	}
 	
@@ -62,6 +67,7 @@ public class ArticleDao {
 		try{
 			Connection conn = DBConfig.getInstance().getConnection();
 			
+			// INSERT ����
 			PreparedStatement psmt = conn.prepareStatement(Sql.INSERT_COMMENT);
 			psmt.setInt(1, article.getParent());
 			psmt.setString(2, article.getContent());
@@ -75,8 +81,6 @@ public class ArticleDao {
 			e.printStackTrace();
 		}
 	}
-	
-	
 	
 	public int selectMaxId() {
 		
@@ -172,6 +176,7 @@ public class ArticleDao {
 				article.setRegip(rs.getString(10));
 				article.setRdate(rs.getString(11));
 				
+				// ��������
 				FileBean fb = new FileBean();
 				fb.setFid(rs.getInt(12));
 				fb.setParent(rs.getInt(13));
@@ -229,6 +234,42 @@ public class ArticleDao {
 		return articles;
 	}
 	
+	public List<ArticleBean> selectComments(String parent) {
+		
+		List<ArticleBean> comments = new ArrayList<>();
+		
+		try {
+			Connection conn = DBConfig.getInstance().getConnection();
+			PreparedStatement psmt = conn.prepareStatement(Sql.SELECT_COMMENTS);
+			psmt.setString(1, parent);
+			
+			ResultSet rs = psmt.executeQuery();
+			
+			while(rs.next()) {
+				ArticleBean comment = new ArticleBean();
+				
+				comment.setId(rs.getInt(1));
+				comment.setParent(rs.getInt(2));
+				comment.setContent(rs.getString(6));
+				comment.setUid(rs.getString(9));
+				comment.setRegip(rs.getString(10));
+				comment.setRdate(rs.getString(11));
+				comment.setNick(rs.getString(12));
+				
+				comments.add(comment);
+			}
+			
+			rs.close();
+			psmt.close();
+			conn.close();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return comments;
+	}
+	
 	public void updateFileCount(int fid) {
 		try {
 			Connection conn = DBConfig.getInstance().getConnection();
@@ -257,10 +298,19 @@ public class ArticleDao {
 		}		
 	}
 	
-	public void updateArticleComment(String id) {
+	public void updateArticleComment(String id, boolean isPlus) {
+		
 		try {
 			Connection conn = DBConfig.getInstance().getConnection();
-			PreparedStatement psmt = conn.prepareStatement(Sql.UPDATE_ARTICLE_COMMENT);
+			
+			PreparedStatement psmt = null;
+			
+			if(isPlus) {
+				psmt = conn.prepareStatement(Sql.UPDATE_ARTICLE_COMMENT_PLUS);
+			}else {
+				psmt = conn.prepareStatement(Sql.UPDATE_ARTICLE_COMMENT_MINUS);
+			}
+			
 			psmt.setString(1, id);
 			
 			psmt.executeUpdate();
@@ -272,7 +322,55 @@ public class ArticleDao {
 	}
 	
 	public void updateArticle() {}
+	public int updateComment (String content, String id) {
+		
+		int result = 0;
+		try {
+			
+			Connection conn = DBConfig.getInstance().getConnection();
+			PreparedStatement psmt = conn.prepareStatement(Sql.UPDATE_COMMENT);
+			psmt.setString(1, content);
+			psmt.setString(2, id);
+			result =  psmt.executeUpdate();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+		
+		
+		
+	}
 	public void deleteArticle() {}
+	
+	public void deleteComment(String id) {
+		// ��� ����
+		try {
+			Connection conn = DBConfig.getInstance().getConnection();
+			PreparedStatement psmt = conn.prepareStatement(Sql.DELETE_COMMENT);
+			psmt.setString(1, id);
+			psmt.executeUpdate();
+			
+			conn.close();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 		
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
