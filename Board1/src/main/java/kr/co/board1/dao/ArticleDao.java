@@ -1,4 +1,4 @@
-package kr.co.board1.db;
+package kr.co.board1.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +10,8 @@ import java.util.List;
 
 import kr.co.board1.bean.ArticleBean;
 import kr.co.board1.bean.FileBean;
+import kr.co.board1.db.DBConfig;
+import kr.co.board1.db.Sql;
 
 public class ArticleDao {
 	
@@ -58,7 +60,7 @@ public class ArticleDao {
 			e.printStackTrace();
 		}
 		
-		// ��� INSERT�� �� ��ȣ ��ȸ
+		// ���? INSERT�� �� ��ȣ ��ȸ
 		return selectMaxId();
 	}
 	
@@ -344,7 +346,7 @@ public class ArticleDao {
 	public void deleteArticle() {}
 	
 	public void deleteComment(String id) {
-		// ��� ����
+		// ���? ����
 		try {
 			Connection conn = DBConfig.getInstance().getConnection();
 			PreparedStatement psmt = conn.prepareStatement(Sql.DELETE_COMMENT);
