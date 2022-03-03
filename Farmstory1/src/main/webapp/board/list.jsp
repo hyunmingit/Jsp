@@ -1,10 +1,27 @@
+<%@page import="kr.co.farmstory1.bean.ArticleBean"%>
+<%@page import="java.util.List"%>
+<%@page import="kr.co.farmstory1.dao.ArticleDao"%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../_header.jsp" %>
 <%
 	request.setCharacterEncoding("utf-8");
 	String cate = request.getParameter("cate");
+	String type = request.getParameter("type");
 	
 	pageContext.include("./inc/_"+cate+".jsp");
+	
+	
+	// 전체 게시판 글 갯수 구해서 각 페이지 시작번호 구하기
+	ArticleDao dao = ArticleDao.getInstance();
+	
+	int total = dao.selectCountTotal(type);
+	int start = 0;
+	
+	int pageStartNum = total - start;
+	
+	// 글 가져오기
+	List<ArticleBean> articles = dao.selectArticles(type, start);
+	
 %>
 <section id="board" class="list">
     <h3>글목록</h3>
@@ -17,13 +34,16 @@
                 <th>날짜</th>
                 <th>조회</th>
             </tr>
+            
+            <% for(ArticleBean article : articles){ %>
             <tr>
-                <td>1</td>
-                <td><a href="./view.html">테스트 제목입니다.</a>&nbsp;[3]</td>
-                <td>길동이</td>
-                <td>20-05-12</td>
-                <td>12</td>
+                <td><%= pageStartNum-- %></td>
+                <td><a href="/Farmstory1/board/view.jsp?cate=<%= cate %>&type=<%= type %>"><%= article.getTitle() %></a>&nbsp;[<%= article.getComment() %>]</td>
+                <td><%= article.getNick() %></td>
+                <td><%= article.getRdate().substring(2, 10) %></td>
+                <td><%= article.getHit() %></td>
             </tr>
+            <% } %>
         </table>
     </article>
 
@@ -37,7 +57,7 @@
     </div>
 
     <!-- 글쓰기 버튼 -->
-    <a href="./write.html" class="btnWrite">글쓰기</a>
+    <a href="/Farmstory1/board/write.jsp?cate=<%= cate %>&type=<%= type %>" class="btnWrite">글쓰기</a>
 
 </section>
 
