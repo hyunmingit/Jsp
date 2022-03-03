@@ -1,6 +1,6 @@
+<%@page import="kr.co.board1.bean.TermsBean"%>
 <%@page import="kr.co.board1.db.Sql"%>
 <%@page import="kr.co.board1.db.DBConfig"%>
-<%@page import="kr.co.board1.bean.TermsBean"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.DriverManager"%>
@@ -42,7 +42,7 @@
     <title>약관</title>
     <link rel="stylesheet" href="../css/style.css"/>    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<script scr="/Board1/js/terms.js"></script>
+	<script src="/Board1/js/terms.js"></script>
     <script>
     
     	$(function(){

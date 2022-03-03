@@ -74,6 +74,17 @@ public class Sql {
 	public static final String DELETE_COMMENT = "DELETE FROM `Board_article` WHERE `id`=?";
 											  
 	
+	public static final String UPDATE_ARTICLE = "UPDATE `Board_article` SET "
+												+ "`title`=? , "
+												+" `content`=? WHERE `id`=?";                                             
+	
+
+	public static final String DELETE_ARTICLE = "DELETE a, b FROM `Board_article` AS a "
+												+"LEFT JOIN `Board_file` AS b "
+												+ "ON a.id = b.parent "
+												+"WHERE `id`=?";
+
+
 }
 
 

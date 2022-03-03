@@ -1,14 +1,15 @@
+<%@page import="kr.co.board1.bean.ArticleBean"%>
+<%@page import="kr.co.board1.bean.UserBean"%>
+<%@page import="kr.co.board1.log.mylog"%>
 <%@page import="kr.co.board1.dao.ArticleDao"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="kr.co.board1.bean.ArticleBean"%>
 <%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="kr.co.board1.db.Sql"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="kr.co.board1.db.DBConfig"%>
-<%@page import="kr.co.board1.bean.UserBean"%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%
 	UserBean sessUser = (UserBean) session.getAttribute("sessUser");
@@ -18,11 +19,12 @@
 		response.sendRedirect("/Board1/user/login.jsp?success=102");
 		return; // <-- 프로그램 실행 여기까지
 	}
+	mylog.getInstance().info("list -1");
 	
 	// 전송 데이터 수신
 	request.setCharacterEncoding("utf-8");
 	String pg = request.getParameter("pg");
-	
+	mylog.getInstance().info("list pg :" +pg);
 	// 페이지 번호 작업
 	int total = ArticleDao.getInstance().selectCountId();
 	int lastPageNum = 0;

@@ -1,6 +1,6 @@
-<%@page import="java.util.List"%>
-<%@page import="kr.co.board1.bean.UserBean"%>
 <%@page import="kr.co.board1.bean.ArticleBean"%>
+<%@page import="kr.co.board1.bean.UserBean"%>
+<%@page import="java.util.List"%>
 <%@page import="kr.co.board1.dao.ArticleDao"%>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%
@@ -125,8 +125,8 @@
                 </tr>
             </table>
             <div>
-                <a href="#" class="btnDelete">삭제</a>
-                <a href="./modify.html" class="btnModify">수정</a>
+                <a href="/Board1/proc/delete.jsp?id==<%=article.getId() %>" class="btnDelete">삭제</a>
+                <a href="/Board1/modify.jsp?id==<%=article.getId() %>" class="btnModify">수정</a>
                 <a href="/Board1/list.jsp" class="btnList">목록</a>
             </div>  
             
@@ -144,9 +144,9 @@
                     <% if(sessUser.getUid().equals(comment.getUid())){ %>
 	                    <div>
 	                        <a class="commentDelete" href="/Board1/proc/deleteComment.jsp?id=<%= comment.getId() %>&parent=<%= comment.getParent() %>">삭제</a>
-	                        <a href="#" class="commentModify">수정</a>
+	                        <a href="/Board1/modify.jsp" class="commentModify">수정</a>
 	                        <a href="#" data-id="<%= comment.getId() %>" class="commentModifyComplete">수정완료</a>
-	                    
+	                    <!-- id값 받아서 이동 -->
 	                    </div>
                     <% } %>
                 </article>

@@ -60,7 +60,7 @@ public class ArticleDao {
 			e.printStackTrace();
 		}
 		
-		// ���? INSERT�� �� ��ȣ ��ȸ
+		// ���? INSERT�� �� ��ȣ ��ȸ
 		return selectMaxId();
 	}
 	
@@ -323,7 +323,23 @@ public class ArticleDao {
 		}		
 	}
 	
-	public void updateArticle() {}
+	public void updateArticle(String title, String content, String id) {
+		
+		try {
+			Connection conn = DBConfig.getInstance().getConnection();
+			PreparedStatement psmt = conn.prepareStatement(Sql.UPDATE_ARTICLE);
+			psmt.setString(1, title);
+			psmt.setString(2, content);
+			psmt.setString(3, id);
+			psmt.executeUpdate();
+			conn.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+			
+		
+		
+	}
 	public int updateComment (String content, String id) {
 		
 		int result = 0;
@@ -343,10 +359,20 @@ public class ArticleDao {
 		
 		
 	}
-	public void deleteArticle() {}
+	public void deleteArticle(String id) {
+		try {
+			Connection conn = DBConfig.getInstance().getConnection();
+			PreparedStatement psmt = conn.prepareStatement(Sql.DELETE_ARTICLE);
+			psmt.setString(1, id);
+			psmt.executeUpdate();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void deleteComment(String id) {
-		// ���? ����
+		// ���? ����
 		try {
 			Connection conn = DBConfig.getInstance().getConnection();
 			PreparedStatement psmt = conn.prepareStatement(Sql.DELETE_COMMENT);
